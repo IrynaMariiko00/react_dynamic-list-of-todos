@@ -37,7 +37,7 @@ function filterTodos(allTodos: Todo[], query: string, filter: string) {
 }
 
 export const App: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState(ALL);
@@ -45,12 +45,12 @@ export const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
-  const onEyeClicked = (todo: Todo) => {
+  const onEyeClicked = (newTodo: Todo) => {
     setShowModal(true);
-    getUser(todo.userId).then(userFromApi => {
+    getUser(newTodo.userId).then(userFromApi => {
       setUser(userFromApi);
     });
-    setSelectedTodo(todo);
+    setSelectedTodo(newTodo);
   };
 
   const onCloseClicked = () => {
@@ -60,10 +60,14 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    getTodos().then(todosFromApi => {
-      setTodos(todosFromApi);
-      setIsLoading(false);
-    });
+    setIsLoading(true);
+    getTodos()
+      .then(todosFromApi => {
+        setTodos(todosFromApi);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
   return (
